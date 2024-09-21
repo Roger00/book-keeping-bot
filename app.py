@@ -34,6 +34,8 @@ def callback():
 def handle_message(event):
     original_message = event.message.text
     for b in analyze(original_message):
+        if not b.expense:
+            continue
         append_booking(b)
         message = TextSendMessage(text=done_message(b))
         line_bot_api.reply_message(event.reply_token, message)
