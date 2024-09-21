@@ -34,7 +34,7 @@ def callback():
 def handle_message(event):
     original_message = event.message.text
     for b in analyze(original_message):
-        if not b.expense:
+        if not b.expense and b.income:
             continue
         b = b._replace(owner = 'Roger' if event.source.user_id == 'U04a8634486ae6fc878ec0662502646eb' else 'Ariel')
         append_booking(b)
@@ -42,7 +42,10 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, message)
 
 def done_message(booking):
-    return f'已記帳: {booking.main_cat} - {booking.sub_cat}: {booking.description} ${booking.expense}'
+    if booking.expense > 0:
+        return f'已記帳: {booking.main_cat} - {booking.sub_cat}: {booking.description} ${booking.expense}'
+    else:
+        return f'已記帳: {booking.main_cat} - {booking.sub_cat}: {booking.description} ${booking.income}'
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
