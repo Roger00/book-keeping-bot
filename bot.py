@@ -21,7 +21,6 @@ prompt="""
 - 醫療保健
 - 金融保險
 - 其他雜項
-- 家用收入
 
 食品酒水子類別:
 - 早餐
@@ -101,13 +100,6 @@ prompt="""
 - 遺失拾獲
 - 呆帳遺失
 
-家用收入子類別:
-- 薪水收入
-- 利息收入
-- 兼職收入
-- 獎金收入
-- 其他
-
 回傳的格式如下
 ['主類別', '子類別', '支出金額', '收入金額', '說明']
 
@@ -116,7 +108,7 @@ prompt="""
 ['食品酒水', '早餐', 50, 0, '']
 ['行車交通', '公共交通費', 100, 0, '捷運加值']
 
-當我輸入 '家用收入 60,000' 請回傳
+當你判斷這是一筆收入，例如當我輸入 '收入 60,000' 請回傳
 
 ['家用收入', '薪水收入', 0, 60000, '']
 
@@ -138,7 +130,9 @@ def analyze(message):
       model="gpt-3.5-turbo",
   )
 
-  return parse(chat_completion.choices[0].message.content)
+  result = chat_completion.choices[0].message.content
+  print(result)
+  return parse(result)
 
 def parse(result):
   bookings = []
@@ -157,4 +151,4 @@ def parse(result):
   return bookings
 
 if __name__ == '__main__':
-    print(analyze("收入 1000000"))
+    print(analyze("收入 1000000元"))
