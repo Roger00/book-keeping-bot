@@ -23,8 +23,13 @@ credentials = {
 def append_booking(b: NamedTuple):
     gc = gspread.service_account_from_dict(credentials)
     wks = gc.open_by_key(SPREADSHEET_ID).sheet1
-    wks.append_row([b.datetime, '', b.main_cat, b.sub_cat, b.expense, b.income, b.description, b.owner], table_range="A1:H1")
+    r = wks.append_row([b.datetime, '', b.main_cat, b.sub_cat, b.expense, b.income, b.description, b.owner], table_range="A1:H1")
+    rowIdx = get_row_index(r)
+    balance = f'=if(I{rowIdx} = "Done", T{rowIdx-1}-E{rowIdx}+F{rowIdx}, T{rowIdx-1})'
+    wks.update(range_name=f'T{rowIdx}:T{rowIdx}', values=[[balance]], value_input_option='USER_ENTERED')
 
+def get_row_index(append_response):
+    return int(append_response['updates']['updatedRange'].split('!')[1].split(':')[0].lstrip('A'))
 
 def main():
     b = Booking(datetime=datetime_str(), main_cat='食品酒水', sub_cat='午餐', expense=7, income=0, description='鐵男家', owner='Roger')
