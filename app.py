@@ -10,7 +10,7 @@ from linebot.exceptions import (
 )
 from linebot.models import *
 
-from sheet import Booking, append_booking
+from sheet import Booking, append_booking, datetime_str
 
 app = Flask(__name__)
 
@@ -31,7 +31,7 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     original_message = event.message.text
-    append_booking(Booking(datetime=1726899449, main_cat='食品酒水', sub_cat='午餐', expense=7, income=0, description=original_message))
+    append_booking(Booking(datetime=datetime_str(), main_cat='食品酒水', sub_cat='午餐', expense=7, income=0, description=original_message))
     message = TextSendMessage(text=done_message(event.message.text))
     line_bot_api.reply_message(event.reply_token, message)
 
