@@ -10,35 +10,34 @@ from linebot.exceptions import (
 )
 from linebot.models import *
 
+from sheet import Booking, append_booking
+
 app = Flask(__name__)
 
-# Channel Access Token
 line_bot_api = LineBotApi(os.environ['CHANNEL_ACCESS_TOKEN'])
-# Channel Secret
 handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
 
-# 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
 def callback():
-    # get X-Line-Signature header value
     signature = request.headers['X-Line-Signature']
-    # get request body as text
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
-    # handle webhook body
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
         abort(400)
     return 'OK'
 
-# 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    message = TextSendMessage(text=event.message.text)
+    original_message = event.message.text
+    append_booking(Booking(datetime=1726899449, main_cat='食品酒水', sub_cat='午餐', expense=7, income=0, description=original_message))
+    message = TextSendMessage(text=done_message(event.message.text))
     line_bot_api.reply_message(event.reply_token, message)
 
-import os
+def done_message(message):
+    return f'已記帳: {message}'
+
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
