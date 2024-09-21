@@ -36,6 +36,7 @@ def handle_message(event):
     for b in analyze(original_message):
         if not b.expense:
             continue
+        b = b._replace(owner = 'Roger' if event.source.user_id == 'U04a8634486ae6fc878ec0662502646eb' else 'Ariel')
         append_booking(b)
         message = TextSendMessage(text=done_message(b))
         line_bot_api.reply_message(event.reply_token, message)

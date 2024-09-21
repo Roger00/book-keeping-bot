@@ -23,11 +23,11 @@ credentials = {
 def append_booking(b: NamedTuple):
     gc = gspread.service_account_from_dict(credentials)
     wks = gc.open_by_key(SPREADSHEET_ID).sheet1
-    wks.append_row([b.datetime, '', b.main_cat, b.sub_cat, b.expense, b.income, b.description], table_range="A1:G1")
+    wks.append_row([b.datetime, '', b.main_cat, b.sub_cat, b.expense, b.income, b.description, b.owner], table_range="A1:H1")
 
 
 def main():
-    b = Booking(datetime=datetime_str(), main_cat='食品酒水', sub_cat='午餐', expense=7, income=0, description='鐵男家')
+    b = Booking(datetime=datetime_str(), main_cat='食品酒水', sub_cat='午餐', expense=7, income=0, description='鐵男家', owner='Roger')
     append_booking(b)
 
 if __name__ == '__main__':

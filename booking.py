@@ -1,7 +1,7 @@
 from collections import namedtuple
 from datetime import datetime, timezone, timedelta
 
-Booking = namedtuple('Booking', 'datetime, main_cat, sub_cat, expense, income, description')
+Booking = namedtuple('Booking', 'datetime, main_cat, sub_cat, expense, income, description, owner')
 
 def datetime_str():
     now = datetime.now(timezone(offset=timedelta(hours=8)))

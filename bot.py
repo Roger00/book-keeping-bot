@@ -138,7 +138,10 @@ def parse(result):
       sub_cat=d[1],
       expense=int(d[2]),
       income=0,
-      description=d[3]))
+      description=d[3],
+      owner='',
+      )
+    )
   return bookings
 
 if __name__ == '__main__':
