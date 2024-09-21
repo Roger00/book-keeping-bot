@@ -10,7 +10,8 @@ from linebot.exceptions import (
 )
 from linebot.models import *
 
-from sheet import Booking, append_booking, datetime_str
+from sheet import append_booking
+from booking import Booking, datetime_str
 
 app = Flask(__name__)
 
