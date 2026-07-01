@@ -41,16 +41,20 @@ fi
 echo ">> Using project $PROJECT_ID, region $REGION, service $SERVICE"
 gcloud config set project "$PROJECT_ID" >/dev/null 2>&1
 
-# Load .env (values may contain spaces / '='; only split on the first '=').
-declare -A VALUES
-while IFS= read -r line || [[ -n "$line" ]]; do
-  [[ -z "$line" || "$line" == \#* ]] && continue
-  key="${line%%=*}"
-  val="${line#*=}"
-  # strip surrounding quotes if present
-  val="${val%\"}"; val="${val#\"}"
-  VALUES["$key"]="$val"
-done < "$ENV_FILE"
+# Read a single key's value from the env file. Only splits on the first '='
+# so values containing '=' are preserved; strips surrounding double quotes.
+# (Avoids bash 4 associative arrays so this runs on macOS's bash 3.2.)
+get_env() {
+  local want="$1" line val
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    [[ -z "$line" || "$line" == \#* ]] && continue
+    [[ "${line%%=*}" != "$want" ]] && continue
+    val="${line#*=}"
+    val="${val%\"}"; val="${val#\"}"
+    printf '%s' "$val"
+    return 0
+  done < "$ENV_FILE"
+}
 
 PROJECT_NUM=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
 RUNTIME_SA="${PROJECT_NUM}-compute@developer.gserviceaccount.com"
@@ -62,7 +66,7 @@ gcloud services enable run.googleapis.com cloudbuild.googleapis.com \
 # Create-or-update each secret, and grant the runtime SA read access.
 SECRET_MAPPINGS=""
 for key in "${SECRETS[@]}"; do
-  val="${VALUES[$key]:-}"
+  val="$(get_env "$key")"
   if [[ -z "$val" ]]; then
     echo "ERROR: $key is empty in $ENV_FILE" >&2
     exit 1
