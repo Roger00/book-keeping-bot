@@ -33,12 +33,15 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     original_message = event.message.text
+    replies = []
     for b in analyze(original_message):
         if not b.expense and not b.income:
             continue
         b = b._replace(owner = 'Roger' if event.source.user_id == 'U04a8634486ae6fc878ec0662502646eb' else 'Ariel')
         append_booking(b)
-        message = TextSendMessage(text=done_message(b))
+        replies.append(done_message(b))
+    if replies:
+        message = TextSendMessage(text='\n'.join(replies))
         line_bot_api.reply_message(event.reply_token, message)
 
 def done_message(booking):
