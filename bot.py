@@ -127,7 +127,7 @@ def analyze(message):
               "content": message,
           }
       ],
-      model="gpt-3.5-turbo",
+      model="gpt-4o-mini",
   )
 
   result = chat_completion.choices[0].message.content
